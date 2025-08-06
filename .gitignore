@@ -1,0 +1,13 @@
+.claude/settings.local.json
+
+# プロジェクト固有
+
+# サンプルプロジェクト
+db/
+docs/
+node_modules/
+src/
+
+docker-compose.yml
+package-lock.json
+package.json
