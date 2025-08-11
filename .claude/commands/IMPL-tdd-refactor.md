@@ -240,3 +240,8 @@ function add(firstNumber, secondNumber) {
 - 品質改善不十分
 - ドキュメント不備
 ```
+
+
+## コンテキスト修正
+**テストがすべて成功した場合、**docs/tmp/context.mdで、**実装・機能名(機能ID)**の**3. REFACTORフェーズ**を「完了」に変更する。
+`/CHECK-next-command`を実行し、次に行うべき処理を提案する。

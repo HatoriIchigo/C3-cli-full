@@ -21,3 +21,7 @@
 
 ## アウトプット
 docs/base/dir-struct.md に保存してください
+
+## コンテキスト修正
+docs/tmp/context.mdで、**ドキュメント・ディレクトリ構成**生成済みに変更する。
+`/CHECK-next-command`を実行し、次に行うべき処理を提案する。
