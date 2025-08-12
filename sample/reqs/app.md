@@ -1,210 +1,122 @@
-# ToDoアプリケーション アプリケーション要件書
+# アプリケーション要件定義書
 
 ## アプリケーションの概要
 
-階層構造を持つタスク管理機能を提供するWebベースのToDoアプリケーションです。ユーザ認証機能により個人専用のタスク管理環境を提供し、親タスク・子タスクの2階層構造でプロジェクト管理から具体的な作業項目まで効率的に管理できます。
+### システム概要
+個人のタスク処理を円滑にするための階層型ToDoアプリケーション。
+親子構造を持つタスク管理機能を提供し、ユーザ認証により個人の作業を効率的に管理できるWebアプリケーションです。
 
 ### 主要機能
-- ユーザ認証（ユーザ名・パスワード認証）
-- 階層タスク管理（親タスク・子タスクの2階層）
-- タスクのCRUD操作
-- ユーザ専用タスク表示
-- タスクの完了状況管理
+- ユーザ認証機能（ユーザ名・パスワード）
+- 階層型タスク管理（親タスク・子タスク）
+- タスクの作成・編集・削除・完了状態管理
+- Webブラウザ対応（PC・スマートフォン）
 
 ## OS/使用するソフトウェアなど
 
-### OS・インフラ
-- **OS**: Amazon Linux 2 または Ubuntu Server LTS（EC2インスタンス）
-- **クラウドプラットフォーム**: AWS
-- **コンピューティング**: EC2インスタンス × 2台（フロントエンド・バックエンド）
-- **データベース**: Amazon RDS for MySQL 8.0
+### OS環境
+- **フロントエンドサーバ**: Amazon Linux 2023
+- **バックエンドサーバ**: Amazon Linux 2023
+- **データベース**: RDS（Amazon Linux 2ベース）
 
-### システム依存ソフトウェア
-- **Webサーバ**: Nginx（リバースプロキシ・静的ファイル配信）
-  - 用途: フロントエンドの静的ファイル配信、バックエンドAPIへのプロキシ
-- **プロセス管理**: PM2
-  - 用途: Node.jsアプリケーションのプロセス管理・自動再起動
-- **SSL/TLS**: Let's Encrypt（Certbot）
-  - 用途: HTTPS通信の実現
-- **ログ管理**: rsyslog
-  - 用途: システムログとアプリケーションログの管理
-
-### セキュリティ・ネットワーク
-- **ファイアウォール**: AWS Security Groups
-- **アクセス制御**: AWS IAM
-- **ネットワーク**: AWS VPC、サブネット
+### 依存するアプリケーション・サービス
+- **PM2**: Node.jsプロセス管理
+  - 用途: アプリケーションのプロセス管理とメモリ監視
+- **nginx**: リバースプロキシ
+  - 用途: フロントエンドの静的ファイル配信とAPIプロキシ
+- **RDS MySQL**: データベースサービス
+  - 用途: ユーザ情報・タスクデータの永続化
 
 ## アプリケーション要件
 
-### フロントエンド要件
+### プログラミング言語
+- **フロントエンド**: JavaScript（ES2020+）
+- **バックエンド**: Node.js v18以上
 
-#### プログラミング言語・フレームワーク
-- **言語**: JavaScript (ES2022+)
-- **フレームワーク**: React 18.x
-- **状態管理**: React Context API + useReducer
-- **ルーティング**: React Router v6
+### ビルドツール
+- **フロントエンド**: Vite
+  - 高速な開発サーバとビルド機能
+- **バックエンド**: npm scripts
+  - シンプルなビルドとデプロイメント
 
-#### ビルドツール・開発環境
-- **ビルドツール**: Vite 4.x
-- **パッケージマネージャ**: npm
-- **トランスパイラ**: Babel（Vite組み込み）
-- **モジュールバンドラ**: Rollup（Vite組み込み）
+### フレームワーク
+- **フロントエンド**: React 18+
+  - 関数コンポーネント + Hooks構成
+  - React Router for SPA routing
+- **バックエンド**: Express.js 4.x
+  - RESTful API設計
+  - ミドルウェアベースのアーキテクチャ
 
-#### UI・スタイリング
-- **UIライブラリ**: Material-UI (MUI) v5
-- **スタイリング**: CSS-in-JS（emotion - MUI依存）
-- **レスポンシブ対応**: MUIのBreakpointシステム
-- **アイコン**: Material Icons
+### その他ライブラリ
 
-#### その他ライブラリ
-- **HTTP通信**: Axios
-- **フォームバリデーション**: React Hook Form
-- **日付処理**: date-fns
-- **通知**: react-toastify
+#### フロントエンド
+- **axios**: HTTP クライアント
+- **react-query/tanstack-query**: サーバ状態管理
+- **styled-components** または **CSS Modules**: スタイリング
+- **react-hook-form**: フォーム管理
 
-#### テストライブラリ（フロントエンド）
-- **テストフレームワーク**: Vitest
-- **テストライブラリ**: React Testing Library
-- **E2Eテスト**: Playwright
-- **モック**: MSW（Mock Service Worker）
+#### バックエンド
+- **mysql2**: MySQL ドライバー
+- **bcrypt**: パスワードハッシュ化
+- **jsonwebtoken**: JWT認証
+- **express-validator**: バリデーション
+- **cors**: CORS対応
+- **helmet**: セキュリティヘッダー設定
+- **morgan**: HTTPログ
+- **dotenv**: 環境変数管理
 
-### バックエンド要件
+### テストで使用するライブラリ
 
-#### プログラミング言語・フレームワーク
-- **言語**: JavaScript (Node.js 18.x LTS)
-- **フレームワーク**: Express.js 4.x
-- **型チェック**: TypeScript 5.x（段階的導入）
+#### フロントエンド
+- **Jest**: テストランナー
+- **React Testing Library**: コンポーネントテスト
+- **MSW (Mock Service Worker)**: API モック
 
-#### データベース・ORM
-- **データベース**: MySQL 8.0（Amazon RDS）
-- **ORM**: Sequelize 6.x
-- **マイグレーション**: Sequelize CLI
-- **接続プール**: Sequelize組み込み機能
-
-#### 認証・セキュリティ
-- **認証**: JWT（JSON Web Token）
-- **パスワードハッシュ化**: bcrypt
-- **セッション管理**: express-session
-- **CORS**: cors middleware
-- **セキュリティヘッダ**: helmet
-- **レート制限**: express-rate-limit
-- **入力検証**: joi
-
-#### その他ライブラリ
-- **ログ出力**: winston
-- **環境変数管理**: dotenv
-- **API文書化**: swagger-jsdoc + swagger-ui-express
-- **HTTP通信**: axios（外部API呼び出し用）
-
-#### テストライブラリ（バックエンド）
-- **テストフレームワーク**: Jest
-- **APIテスト**: Supertest
-- **データベーステスト**: jest-sequelize
-- **モック**: jest.mock
-
-### 開発・運用ツール
-
-#### 開発ツール
-- **エディタ設定**: EditorConfig
-- **コード品質**: ESLint + Prettier
-- **Git Hook**: husky + lint-staged
-- **環境管理**: Docker（開発環境）
-
-#### CI/CD（将来対応）
-- **CI/CD**: GitHub Actions
-- **デプロイ**: AWS CLI + スクリプト
+#### バックエンド
+- **Jest**: テストランナー
+- **Supertest**: HTTP テスト
+- **mysql2/promise**: データベースのテスト用接続
 
 ## コーディング規約
 
-### 共通規約
-
-#### ファイル・ディレクトリ命名
-- **ファイル名**: kebab-case（例: `user-service.js`、`task-list.jsx`）
-- **ディレクトリ名**: kebab-case（例: `components/`、`api-routes/`）
-- **定数ファイル**: UPPER_SNAKE_CASE（例: `API_ENDPOINTS.js`）
-
-#### コード品質
-- **文字エンコーディング**: UTF-8
-- **改行コード**: LF（Unix形式）
+### 全体共通
+- **文字コード**: UTF-8
+- **改行コード**: LF
 - **インデント**: スペース2個
-- **行末スペース**: 禁止
-- **最終行**: 空行で終了
+- **末尾セミコロン**: 必須
 
-### JavaScript/TypeScript規約
+### JavaScript/Node.js規約
+- **ESLint**: Airbnb JavaScript Style Guide準拠
+- **Prettier**: コードフォーマット
+- **命名規則**:
+  - 変数・関数: camelCase
+  - 定数: UPPER_SNAKE_CASE
+  - クラス: PascalCase
+  - ファイル名: kebab-case
 
-#### 基本ルール
-- **セミコロン**: 必須
-- **クォート**: シングルクォート優先、JSX内はダブルクォート
-- **変数宣言**: `const` > `let` > `var`禁止
-- **関数**: アロー関数優先、ただしメソッド定義は通常関数も可
-
-#### 命名規約
-- **変数・関数**: camelCase（例: `getUserData`、`taskList`）
-- **定数**: UPPER_SNAKE_CASE（例: `API_BASE_URL`、`MAX_RETRY_COUNT`）
-- **クラス・コンポーネント**: PascalCase（例: `TaskItem`、`UserService`）
-- **プライベート変数**: アンダースコア接頭辞（例: `_privateMethod`）
-
-#### React規約
-- **コンポーネントファイル**: PascalCase.jsx（例: `TaskList.jsx`）
-- **Hooks**: `use`接頭辞（例: `useTaskData`、`useAuth`）
-- **Props**: camelCase、boolean型は`is`/`has`接頭辞
-- **State**: オブジェクトで管理、updateは`set`接頭辞
-
-#### 関数・コメント
-- **関数**: 単一責任の原則、20行以内推奨
-- **JSDoc**: パブリック関数には必須
-- **インラインコメント**: 複雑なロジックのみ
-- **TODO/FIXME**: 必要に応じて使用、issueリンク推奨
+### React規約
+- **関数コンポーネント**: 必須（クラスコンポーネント禁止）
+- **Hooks**: 公式のRules of Hooksに準拠
+- **コンポーネント名**: PascalCase
+- **Props**: 型安全性のためのPropTypes使用を推奨
 
 ### データベース規約
-
-#### テーブル・カラム命名
-- **テーブル名**: snake_case、複数形（例: `users`、`parent_tasks`）
-- **カラム名**: snake_case（例: `user_id`、`created_at`）
-- **主キー**: `id`（AUTO_INCREMENT）
-- **外部キー**: `{テーブル名単数}_id`（例: `user_id`、`parent_task_id`）
-
-#### 制約・インデックス
-- **NOT NULL**: 必須項目は明示的に指定
-- **DEFAULT**: 適切なデフォルト値を設定
-- **INDEX**: 検索対象カラムには適切なインデックス
-- **UNIQUE**: 一意制約が必要な項目は明示
+- **テーブル名**: snake_case（複数形）
+- **カラム名**: snake_case
+- **インデックス**: パフォーマンス要件に応じて適切に設定
 
 ### API設計規約
+- **RESTful**: HTTP メソッドとリソースベース設計
+- **エラーハンドリング**: 適切なHTTPステータスコード
+- **レスポンス形式**: JSON（統一フォーマット）
 
-#### RESTful API
-- **エンドポイント**: kebab-case（例: `/api/v1/parent-tasks`）
-- **HTTPメソッド**: GET（取得）、POST（作成）、PUT（更新）、DELETE（削除）
-- **ステータスコード**: 適切なHTTPステータスコードを使用
-- **レスポンス形式**: JSON、統一されたエラーレスポンス
+### セキュリティ規約
+- **パスワード**: bcryptでハッシュ化（salt rounds: 12）
+- **JWT**: 有効期限設定（1時間）
+- **SQL インジェクション**: パラメータ化クエリ必須
+- **XSS対策**: 入力値のサニタイズ
 
-#### セキュリティ
-- **認証**: JWTトークンをAuthorizationヘッダーで送信
-- **バリデーション**: 入力値の検証を必須
-- **CORS**: 適切なオリジン制限
-- **レート制限**: API呼び出し頻度の制限
-
-### エラーハンドリング
-
-#### フロントエンド
-- **エラー境界**: React Error Boundaryの実装
-- **ユーザー通知**: 分かりやすいエラーメッセージ
-- **ログ出力**: console.error使用、本番環境では外部サービス連携
-
-#### バックエンド
-- **エラーレスポンス**: 統一されたJSON形式
-- **ログ出力**: winstonを使用した構造化ログ
-- **例外処理**: try-catch文の適切な使用
-
-### バージョン管理
-
-#### Git規約
-- **ブランチ命名**: `feature/task-name`、`fix/bug-name`
-- **コミットメッセージ**: `type: description`形式（例: `feat: add task creation feature`）
-- **コミット単位**: 論理的な変更単位でコミット
-- **プルリクエスト**: レビュー必須、適切な説明文
-
-#### リリース管理
-- **バージョニング**: Semantic Versioning（x.y.z）
-- **タグ**: リリース時にGitタグを作成
-- **CHANGELOG**: 変更履歴の管理
+### ログ・監視規約
+- **ログレベル**: ERROR, WARN, INFO, DEBUG
+- **ログ形式**: JSON形式で出力
+- **機密情報**: パスワード等のログ出力禁止
