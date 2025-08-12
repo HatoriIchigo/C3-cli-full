@@ -39,3 +39,8 @@
 
 ## アウトプット
 docs/detail/external.md に保存してください。
+
+
+## コンテキスト修正
+docs/tmp/context.mdで、**ドキュメント・外部接続詳細設計書**を「生成済み」に変更する。
+`.claude/commands/CHECK-next-command.md`を確認し、次に行うべき処理を提案する。

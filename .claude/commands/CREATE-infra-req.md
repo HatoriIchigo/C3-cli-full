@@ -52,3 +52,7 @@ AWSやオンプレなどのプラットフォームの選定。
 ## アウトプット
 docs/reqs/infra.md　に保存すること。
 
+
+## コンテキスト修正
+docs/tmp/context.mdで、***ドキュメント・インフラ要件定義書**を「生成済み」に変更する。
+`.claude/commands/CHECK-next-command.md`を確認し、次に行うべき処理を提案する。

@@ -170,3 +170,8 @@ graph TD;
 | -- | -- | -- |
 | E-B0002 | ERROR | DBの接続に失敗しました。 |
 ```
+
+
+## コンテキスト修正
+docs/tmp/context.mdで、**詳細設計書・機能名(機能ID)**を「生成済み」に変更する。
+`.claude/commands/CHECK-next-command.md`を確認し、次に行うべき処理を提案する。

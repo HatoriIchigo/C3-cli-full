@@ -51,6 +51,6 @@ docs/unit-test/func/機能名.機能ID.mdに保存してください
 
 
 ## コンテキスト修正
-docs/tmp/context.mdで、**テストケース一覧・機能名(機能ID)**を「作成済み」に変更する。
-`/CHECK-next-command`をclaudeカスタムコマンドとして実行し、次に行うべき処理を提案する。
+docs/tmp/context.mdで、**テストケース一覧・機能名(機能ID)**を「生成済み」に変更する。
+`.claude/commands/CHECK-next-command.md`を確認し、次に行うべき処理を提案する。
 

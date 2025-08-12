@@ -61,8 +61,6 @@ DBの実行環境を出力してください。
 ## 出力
 出力結果を docs/detail/db.md に保存してください。
 
-
-
-
-
-
+## コンテキスト修正
+docs/tmp/context.mdで、**ドキュメント・DB詳細設計書**を「生成済み」に変更する。
+`.claude/commands/CHECK-next-command.md`を確認し、次に行うべき処理を提案する。

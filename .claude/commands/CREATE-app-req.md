@@ -32,3 +32,6 @@ note と 要件定義遺書を元にアプリケーション要件を決定
 ## アウトプット
 docs/reqs/app.mdに保存すること
 
+## コンテキスト修正
+docs/tmp/context.mdで、***ドキュメント・アプリケーション要件定義書**を「生成済み」に変更する。
+`.claude/commands/CHECK-next-command.md`を確認し、次に行うべき処理を提案する。
