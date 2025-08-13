@@ -8,6 +8,10 @@ CLIアプリケーション及びwebのバックエンド開発に対応した**
 
 ## 🚀 主要コマンド
 
+### 📊 ワークフロー・進行管理系
+- `/CREATE-workflow` - 開発ワークフローの作成
+- `CHECK-next-command` - 次に実行すべきコマンドの確認
+
 ### 📋 ドキュメント作成系（CREATE-XXX）
 - `CREATE-app-req` - アプリケーション要求仕様書作成
 - `CREATE-app-detail` - 詳細設計書作成
