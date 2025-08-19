@@ -38,3 +38,8 @@ Thumbs.db
 # docker-compose.yml
 # package-lock.json
 # package.json
+
+__pycache__/
+workflow.json
+
+.serena/

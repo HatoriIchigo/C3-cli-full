@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    networks:
+      custom_network:
+        ipv4_address: 192.168.10.3
+    ports:
+      - "13303:13303"
+    volumes:
+      - ./backend:/workspace
+      - ..:/project
+    stdin_open: true
+    tty: true
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    networks:
+      custom_network:
+        ipv4_address: 192.168.10.4
+    ports:
+      - "13304:13304"
+    volumes:
+      - ./frontend:/workspace
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+
+networks:
+  custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24

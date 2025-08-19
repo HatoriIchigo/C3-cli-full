@@ -1,0 +1,49 @@
+{
+    "id": "hello",
+    "name": "Helloを表示",
+    "description": "claudeにHelloと表示させる",
+    "input": [
+        {
+            "file": "docs/hello.txt",
+            "required": "true"
+        }
+    ],
+    "command": [
+        {
+            "id": "start",
+            "name": "開始",
+            "command": [
+                "-"
+            ],
+            "next": "checkFile"
+        },
+        {
+            "id": "checkFile",
+            "name": "echo Hello",
+            "description": "AAA",
+            "type": "bash",
+            "command": [
+                "echo",
+                "'Hello'"
+            ],
+            "failed": "__exit_1__"
+        },
+        {
+            "id": "claude-hello",
+            "name": "echo Hello",
+            "description": "AAA",
+            "type": "claude",
+            "command": "hello",
+            "next": "finish"
+        },
+        {
+            "id": "finish",
+            "name": "終了",
+            "command": [
+                "-"
+            ]
+        }
+    ],
+    "status": "waiting",
+    "next": "claude-create-doc-req"
+}

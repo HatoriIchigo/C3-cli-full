@@ -1,0 +1,100 @@
+{
+    "id": "${func}-impl",
+    "name": "${func}の実装",
+    "description": "機能${func}の実装を行う",
+    "args": [
+        {
+            "name": "func",
+            "type": "string",
+            "description": "機能名"
+        }
+    ],
+    "input": [],
+    "command": [
+        {
+            "id": "start",
+            "name": "開始",
+            "command": [
+                "-"
+            ],
+            "next": "tdd-red-impl"
+        },
+        {
+            "id": "tdd-red-impl",
+            "name": "TDD Redフェーズ 実装",
+            "description": "TDDのRedフェーズの実装を行う",
+            "type": "claude",
+            "command": [
+                "/IMPL-tdd-red",
+                "${func}"
+            ],
+            "next": "tdd-red-check"
+        },
+        {
+            "id": "tdd-red-check",
+            "name": "TDD Redフェーズ コードチェック",
+            "description": "TDDのRedフェーズのコードチェックを行う",
+            "type": "claude",
+            "command": [
+                "/IMPL-tdd-red-check",
+                "${func}"
+            ],
+            "next": "tdd-red-build",
+            "failed": "tdd-red-impl"
+        },
+        {
+            "id": "tdd-red-build",
+            "name": "TDD Redフェーズ ビルド",
+            "description": "TDDのRedフェーズのビルドを行う",
+            "type": "claude",
+            "command": [
+                "/IMPL-tdd-red-build",
+                "${func}"
+            ],
+            "next": "tdd-green-impl",
+            "failed": "tdd-red-impl"
+        },
+        {
+            "id": "tdd-green-impl",
+            "name": "TDD Greenフェーズ 実装",
+            "description": "TDDのGreenフェーズの実装を行う",
+            "type": "claude",
+            "command": [
+                "/IMPL-tdd-green",
+                "${func}"
+            ],
+            "next": "tdd-green-check"
+        },
+        {
+            "id": "tdd-green-check",
+            "name": "TDD Greenフェーズ コードチェック",
+            "description": "TDDのGreenフェーズのコードチェックを行う",
+            "type": "claude",
+            "command": [
+                "/IMPL-tdd-green-check",
+                "${func}"
+            ],
+            "next": "tdd-green-build",
+            "failed": "tdd-green-impl"
+        },
+        {
+            "id": "tdd-green-build",
+            "name": "TDD Greenフェーズ ビルド",
+            "description": "TDDのGreenフェーズのビルドを行う",
+            "type": "claude",
+            "command": [
+                "/IMPL-tdd-green-build",
+                "${func}"
+            ],
+            "next": "finish",
+            "failed": "tdd-green-impl"
+        },
+        {
+            "id": "finish",
+            "name": "終了",
+            "command": [
+                "-"
+            ]
+        }
+    ]
+}

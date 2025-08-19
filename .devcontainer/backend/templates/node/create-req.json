@@ -1,0 +1,49 @@
+{
+    "id": "claude-create-doc-req",
+    "name": "要件定義書を作成",
+    "type": "claude",
+    "description": "要求定義書を作成します。",
+    "input": [
+        {
+            "file": "docs/note/*",
+            "required": "yes"
+        }
+    ],
+    "command": [
+        {
+            "id": "start",
+            "name": "開始",
+            "command": [
+                "-"
+            ],
+            "next": "checkFile"
+        },
+        {
+            "id": "checkFile",
+            "name": "echo Hello",
+            "description": "AAA",
+            "type": "bash",
+            "command": [
+                "echo",
+                "'Hello'"
+            ],
+            "failed": "__exit_1__",
+            "next": "claude-hello"
+        },
+        {
+            "id": "claude-hello",
+            "name": "echo Hello",
+            "description": "AAA",
+            "type": "claude",
+            "command": "hello",
+            "next": "finish"
+        },
+        {
+            "id": "finish",
+            "name": "終了",
+            "command": [
+                "-"
+            ]
+        }
+    ]
+}
