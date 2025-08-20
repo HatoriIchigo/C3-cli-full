@@ -1,0 +1,1 @@
+"Hello. May I help you?" と表示する
