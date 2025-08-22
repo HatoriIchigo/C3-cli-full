@@ -100,10 +100,3 @@
 
 ## アウトプット
 docs/reqs/requirement.mdに保存してください。
-
-
-## コンテキスト修正
-docs/tmp/context.mdで、***ドキュメント・要件定義書**を「生成済み」に変更する。
-`.claude/commands/CHECK-next-command.md`を確認し、次に行うべき処理を提案する。
-
-

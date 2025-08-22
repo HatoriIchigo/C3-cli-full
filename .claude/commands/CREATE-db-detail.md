@@ -1,10 +1,8 @@
 各使用書からDBの使用を抽出・提案
 
 ## インプット
-- docs/note/配下（メモ）を読み込み
-    - 無い場合はエラー終了
-- docs/base/base-doc.md（基本設計書）を読み込み
-    - 無い場合はエラー終了
+- docs/note/配下（メモ、必須）を読み込み
+- docs/base/base-doc.md（基本設計書、必須）を読み込み
 
 ## 概要
 メモ及び基本設計書からDB仕様書を作成する
@@ -21,12 +19,29 @@ DBの実行環境を出力してください。
 ## DB実行環境
 - DBMS: MySQL
 - Version: 8.x
-- 実行環境: AWS Aurora
-    - 2AZを使用
-    - 増分バックアップとし、頻度は1週間に1回とする
+
+## 接続方法
+### 開発環境
+- **DB構築環境**: ローカル(Docker)
+- **ホスト**: `localhost`(ハードコーディング)
+- **ユーザ名**: `testuser`(ハードコーディング)
+- **パスワード**: `Passw0rd`(ハードコーディング)
+- **DB名**: `testdb`(ハードコーディング)
+
+### 商用環境
+- **DB構築環境**: AWS Aurora on MySQL
+- **ホスト**:
+    - AWS SystemManager ParameterStore
+    - キー名: `prd-db-host`
+- **ユーザ名**:
+    - AWS SecretsManager
+- **パスワード**:
+    - AWS SecretsManager
+- **DB名**:
+    - AWS SystemManager ParameterStore
+    - キー名: `prd-db-dbname`
 ```
 
-**ユーザに確認を行い、承認された場合にのみ次の処理を実行する**
 
 ### テーブル仕様書
 テーブルの仕様について出力してください。
@@ -56,11 +71,6 @@ DBの実行環境を出力してください。
 | 2. | password | varchara | | | | 〇 | 〇 | パスワード | sha256で暗号化して格納 |
 ```
 
-**ユーザに確認を行い、承認された場合にのみ次の処理を実行する**
-
 ## 出力
-出力結果を docs/detail/db.md に保存してください。
+出力結果を docs/detail/db/db.md に保存してください。
 
-## コンテキスト修正
-docs/tmp/context.mdで、**ドキュメント・DB詳細設計書**を「生成済み」に変更する。
-`.claude/commands/CHECK-next-command.md`を確認し、次に行うべき処理を提案する。
