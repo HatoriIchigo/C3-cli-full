@@ -3,12 +3,6 @@
     "name": "要件定義書を作成",
     "type": "claude",
     "description": "要求定義書を作成します。",
-    "input": [
-        {
-            "file": "docs/note/*",
-            "required": "yes"
-        }
-    ],
     "command": [
         {
             "id": "start",
@@ -16,26 +10,39 @@
             "command": [
                 "-"
             ],
-            "next": "checkFile"
+            "next": "create-doc-req"
         },
         {
-            "id": "checkFile",
-            "name": "echo Hello",
-            "description": "AAA",
-            "type": "bash",
-            "command": [
-                "echo",
-                "'Hello'"
-            ],
-            "failed": "__exit_1__",
-            "next": "claude-hello"
-        },
-        {
-            "id": "claude-hello",
-            "name": "echo Hello",
-            "description": "AAA",
+            "id": "create-doc-req",
+            "name": "要件定義書を作成",
+            "description": "メモ書きから要件定義書の作成を行う",
+            "input": [{"file": "docs/note/*", "required": "yes"}],
             "type": "claude",
-            "command": "hello",
+            "command": ["CREATE-doc-req"],
+            "next": "create-app-req"
+        },
+        {
+            "id": "create-app-req",
+            "name": "アプリ要件定義書を作成",
+            "description": "メモ書きからアプリケーション要件定義書を作成する",
+            "input": [
+                {"file": "docs/note/*", "required": "yes"},
+                {"file": "docs/reqs/requirement.md", "required": "yes"}
+            ],
+            "type": "claude",
+            "command": ["CREATE-app-req"],
+            "next": "create-infra-req"
+        },
+        {
+            "id": "create-infra-req",
+            "name": "インフラ要件定義書を作成",
+            "description": "メモ書きからインフラ要件定義書を作成する",
+            "input": [
+                {"file": "docs/note/*", "required": "yes"},
+                {"file": "docs/reqs/requirement.md", "required": "yes"}
+            ],
+            "type": "claude",
+            "command": ["CREATE-infra-req"],
             "next": "finish"
         },
         {

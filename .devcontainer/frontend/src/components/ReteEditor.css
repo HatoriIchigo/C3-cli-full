@@ -23,7 +23,7 @@
 /* 処理ノード（角丸四角） */
 .workflow-node--rectangular {
   border-radius: 2px;
-  padding: 16px 20px;
+  padding: 16px 20px 60px 20px;
   min-width: 300px;
   min-height: 120px;
   background: #ffffff;
@@ -143,32 +143,59 @@
   text-align: left;
 }
 
-/* アクションボタン */
-.workflow-node__action-button {
+/* 下部ボタン群 */
+.workflow-node__bottom-buttons {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  border: none;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #ffffff;
-  font-size: 10px;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.workflow-node__bottom-button {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  opacity: 0.8;
+  flex: 1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.workflow-node__action-button:hover {
-  opacity: 1;
-  transform: scale(1.1);
+.workflow-node__bottom-button--action {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+}
+
+.workflow-node__bottom-button--action:hover {
+  transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3), 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.workflow-node__bottom-button--custom {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+}
+
+.workflow-node__bottom-button--custom:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3), 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.workflow-node__button-icon {
+  font-size: 10px;
+}
+
+.workflow-node__button-text {
+  font-size: 12px;
 }
 
 /* ハンドルのスタイル */
@@ -254,10 +281,11 @@
   50% { opacity: 0.4; }
 }
 
-/* アクションボタンの無効化状態 */
-.workflow-node__action-button:disabled {
+/* ボタンの無効化状態 */
+.workflow-node__bottom-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* 下部パネル */
@@ -332,4 +360,124 @@
 /* ノードの選択状態 */
 .workflow-node--selected {
   box-shadow: 0 0 0 2px #3b82f6;
+}
+
+/* カスタム入力オーバーレイ */
+.workflow-custom-input-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.workflow-custom-input-modal {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  animation: slideIn 0.2s ease-out;
+}
+
+.workflow-custom-input-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.workflow-custom-input-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.workflow-custom-input-content {
+  padding: 20px 24px;
+}
+
+.workflow-custom-input-textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  transition: border-color 0.2s ease;
+}
+
+.workflow-custom-input-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.workflow-custom-input-buttons {
+  padding: 16px 24px 20px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.workflow-custom-input-button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+}
+
+.workflow-custom-input-button--cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.workflow-custom-input-button--cancel:hover {
+  background: #e5e7eb;
+}
+
+.workflow-custom-input-button--execute {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+}
+
+.workflow-custom-input-button--execute:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.workflow-custom-input-button--execute:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

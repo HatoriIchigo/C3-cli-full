@@ -1,0 +1,62 @@
+{
+    "id": "claude-create-base",
+    "name": "基本設計書を作成",
+    "type": "claude",
+    "description": "メモを元に基本設計書を作成します。",
+    "command": [
+        {
+            "id": "start",
+            "name": "開始",
+            "command": [
+                "-"
+            ],
+            "next": "create-app-funclist"
+        },
+        {
+            "id": "create-app-funclist",
+            "name": "機能一覧を作成",
+            "description": "メモ書きから機能一覧書の作成を行う",
+            "input": [{"file": "docs/note/*", "required": "yes"}],
+            "type": "claude",
+            "command": ["CREATE-app-funclist"],
+            "next": "create-doc-base"
+        },
+        {
+            "id": "create-doc-base",
+            "name": "基本設計書の作成",
+            "description": "基本設計書の作成を行う",
+            "input": [
+                {"file": "docs/reqs/requirement.md", "required": "yes"},
+                {"file": "docs/reqs/app.md", "required": "yes"},
+                {"file": "docs/reqs/infra.md", "required": "no"},
+                {"file": "docs/base/func-list.md", "required": "yes"}
+            ],
+            "type": "claude",
+            "command": ["CREATE-doc-base"],
+            "next": "auto-append-workflow"
+        },
+        {
+            "id": "auto-append-workflow",
+            "name": "ワークフローの追加",
+            "description": "足りないワークフローを追加する",
+            "input": [{"file": "docs/base/func-list.md", "required": "yes"}],
+            "type": "add-workflow",
+            "command": [
+                {"id": "claude-create-db-detail"},
+                {"id": "claude-create-external-detail"},
+                {"id": "claude-create-infra-detail"},
+                {"id": "claude-create-log-detail"},
+                {"id": "claude-create-network-detail"},
+                {"id": "claude-create-app-detail", "args": [{"file": "docs/..."}]}
+            ],
+            "next": "finish"
+        },
+        {
+            "id": "finish",
+            "name": "終了",
+            "command": [
+                "-"
+            ]
+        }
+    ]
+}

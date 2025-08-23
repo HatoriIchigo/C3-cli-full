@@ -329,10 +329,12 @@ const WorkflowView = ({ showCreateModal, setShowCreateModal }) => {
                 再試行
               </button>
             </div>
-          ) : workflows.length === 0 ? (
-            <div className="empty">ワークフローがありません</div>
           ) : (
             <>
+              {workflows.length === 0 && (
+                <div className="empty">ワークフローがありません</div>
+              )}
+              
               {workflows.map((workflow, index) => (
                 <div
                   key={workflow.id || index}
@@ -355,7 +357,7 @@ const WorkflowView = ({ showCreateModal, setShowCreateModal }) => {
                 </div>
               ))}
               
-              {/* 新規追加ボタン */}
+              {/* 新規追加ボタン（常に表示） */}
               <div className="workflow-item add-workflow-item">
                 <div className="workflow-content">
                   <button 

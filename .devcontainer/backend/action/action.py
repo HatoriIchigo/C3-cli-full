@@ -4,6 +4,7 @@ from pydantic import BaseModel
 # import action
 import json, os, subprocess, glob
 from datetime import datetime
+import copy
 
 router = APIRouter()
 
@@ -23,7 +24,7 @@ async def run_command(request: Request, req: ActionRequest):
         ids = data["id"].split("#")
         node = next(filter(lambda x: x["id"] == ids[0], request.app.state.project_workflow["workflow"]), None)
         cmd = next(filter(lambda x: x["id"] == ids[1], node["command"]), None)
-        ret = await run_command(cmd)
+        ret = await run_command(request, cmd)
 
         if ret["status"] == 0:
             cmd["status"] = "success"
@@ -73,25 +74,28 @@ def get_workflow_by_id(workflow: dict, workflow_id: str) -> dict | None:
 #
 ######################
 # run main
-async def run_command(command: dict):
+async def run_command(request: Request, command: dict):
     result = {"status": 0, "message": ""}
-    if command["type"] == "bash":
+    type = command.get("type", "")
+    if type == "bash":
         res = await run_bash(command["command"])
         result["status"] = res.returncode
         if res.returncode == 0:
             result["message"] = res.stdout
         else:
             result["message"] = res.stderr
-    elif command["type"] == "claude":
+    elif type == "claude":
         res = await run_claude(command["command"])
         result["status"] = res.returncode
         for line in res.stdout.split("\n")[-3:]:
             if "__exit_0__" in line: result["status"] = 0
             elif "__exit_" in line: result["status"] = 1
         result["message"] = res.stdout
-    elif command["type"] == "none":
-        # 何も実行しないコマンド
-        pass
+    elif type == "add-workflow":
+        result["status"], result["message"] = await add_workflow(request, command["command"])
+    else:
+        result["status"] = 1
+        result["message"] = "No match action type"
     print(result)
     return result
 
@@ -105,6 +109,20 @@ async def run_claude(command: list[str]):
 async def run_bash(command: list):
     result = subprocess.run(command, cwd="/project", capture_output=True, text=True)
     return result
+
+# node追加
+async def add_workflow(request: Request, command: list):
+    for node in command:
+        args = node.get("args", [])
+        if len(args) == 0:
+            workflow = request.app.state.project_workflow["workflow"]
+            node = get_and_convert_node({"template_id": node["id"], "args": {}}, request.app.state.node_template)
+            if node is not None:
+                workflow.append(node)
+            else:
+                return 1, "node append to workflow error"
+
+    return 1, "Error"
 
 # ファイルがあるかチェック
 async def existFile(files: list[str]) -> bool:
@@ -126,3 +144,21 @@ def update_project(request: Request):
     with open(os.path.join("project", "workflow.json"), "w") as f:
         json.dump(request.app.state.project_workflow, f, indent=4, ensure_ascii=False)
     return
+
+#################################
+#
+#################################
+def get_and_convert_node(request, node_template):
+    ret = copy.deepcopy(next(filter(lambda x: x["id"] == request["template_id"], node_template), None))
+    if ret is None:
+        return None
+    for key, value in request["args"].items():
+        ret["id"] = ret["id"].replace('${' + key + '}', value)
+        ret["name"] = ret["name"].replace('${' + key + '}', value)
+        if "description" in ret: ret["description"] = ret["description"].replace('${' + key + '}', value)
+        for cmd in ret["command"]:
+            cmd["id"] = cmd["id"].replace('${' + key + '}', value)
+            cmd["name"] = cmd["name"].replace('${' + key + '}', value)
+            if "description" in cmd: cmd["description"] = cmd["description"].replace('${' + key + '}', value)
+            cmd["command"] = [c.replace('${' + key + '}', value) for c in cmd["command"]]
+    return ret

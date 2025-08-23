@@ -130,16 +130,31 @@ const CustomNode = ({ data, id, selected }) => {
         </div>
       )}
 
-      {/* アクションボタン（開始・終了・異常終了以外） */}
+      {/* 下部ボタン群（開始・終了・異常終了以外） */}
       {hasActionButton && (
-        <button
-          onClick={handleExecuteNode}
-          className="workflow-node__action-button"
-          title="このノードを実行"
-          disabled={data.executionStatus === 'running'}
-        >
-          ▶
-        </button>
+        <div className="workflow-node__bottom-buttons">
+          <button
+            onClick={handleExecuteNode}
+            className="workflow-node__bottom-button workflow-node__bottom-button--action"
+            title="このノードを実行"
+            disabled={data.executionStatus === 'running'}
+          >
+            <span className="workflow-node__button-icon">▶</span>
+            <span className="workflow-node__button-text">実行</span>
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (data.onShowCustomInput) {
+                data.onShowCustomInput(id);
+              }
+            }}
+            className="workflow-node__bottom-button workflow-node__bottom-button--custom"
+            title="カスタム入力で実行"
+          >
+            <span className="workflow-node__button-text">カスタム</span>
+          </button>
+        </div>
       )}
       
       {/* 通常の出力ハンドル（下部） */}
@@ -176,6 +191,9 @@ const ReteEditor = ({ workflowData }) => {
   const [selectedNodeId, setSelectedNodeId] = useState(null); // 選択されたノード
   const [executionResults, setExecutionResults] = useState({}); // 実行結果
   const [showBottomPanel, setShowBottomPanel] = useState(false); // 下部パネル表示状態
+  const [showCustomInputOverlay, setShowCustomInputOverlay] = useState(false); // カスタム入力オーバーレイ表示状態
+  const [customInputNodeId, setCustomInputNodeId] = useState(null); // カスタム入力対象ノードID
+  const [customInputText, setCustomInputText] = useState(''); // カスタム入力テキスト
 
   // 実行状態更新関数
   const updateNodeExecutionStatus = useCallback((nodeId, status, result = null) => {
@@ -216,22 +234,96 @@ const ReteEditor = ({ workflowData }) => {
     setShowBottomPanel(false);
   }, []);
 
+  // カスタム入力オーバーレイを表示
+  const showCustomInputOverlayHandler = useCallback((nodeId) => {
+    setCustomInputNodeId(nodeId);
+    setCustomInputText('');
+    setShowCustomInputOverlay(true);
+  }, []);
+
+  // カスタム入力オーバーレイを閉じる
+  const hideCustomInputOverlay = useCallback(() => {
+    setShowCustomInputOverlay(false);
+    setCustomInputNodeId(null);
+    setCustomInputText('');
+  }, []);
+
+  // カスタム入力で実行
+  const executeWithCustomInput = useCallback(async () => {
+    if (!customInputNodeId || !customInputText.trim()) {
+      return;
+    }
+
+    const nodeData = nodes.find(n => n.id === customInputNodeId)?.data;
+    if (!nodeData) {
+      return;
+    }
+
+    // workflow_idの生成（workflow.id#command.id）
+    const workflowId = `${nodeData.workflowId}#${customInputNodeId}`;
+    
+    console.log('カスタム入力でノード実行開始:', nodeData.label, workflowId, customInputText);
+    
+    // 実行状態を「実行中」に更新
+    if (nodeData.onStatusUpdate) {
+      nodeData.onStatusUpdate(customInputNodeId, 'running');
+    }
+    
+    try {
+      const response = await fetch('http://localhost:13303/action/action', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          workflow_id: workflowId,
+          custom_input: customInputText
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, details: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('カスタム入力でノード実行成功:', result);
+      
+      // 実行状態を「成功」に更新し、結果を保存
+      if (nodeData.onStatusUpdate) {
+        nodeData.onStatusUpdate(customInputNodeId, 'success', result);
+      }
+      
+      // オーバーレイを閉じる
+      hideCustomInputOverlay();
+      
+    } catch (err) {
+      console.error('カスタム入力でノード実行エラー:', err);
+      
+      // 実行状態を「失敗」に更新
+      if (nodeData.onStatusUpdate) {
+        nodeData.onStatusUpdate(customInputNodeId, 'error', { error: err.message });
+      }
+    }
+  }, [customInputNodeId, customInputText, nodes, hideCustomInputOverlay]);
+
   useEffect(() => {
     if (workflowData && workflowData.nodes && workflowData.connections) {
       const reactFlowNodes = convertToReactFlowNodes(
         workflowData.nodes, 
         workflowData.workflow?.id,
         updateNodeExecutionStatus,
-        nodeExecutionStatus
+        nodeExecutionStatus,
+        showCustomInputOverlayHandler
       );
       const reactFlowEdges = convertToReactFlowEdges(workflowData.connections);
       
       setNodes(reactFlowNodes);
       setEdges(reactFlowEdges);
     }
-  }, [workflowData, setNodes, setEdges, updateNodeExecutionStatus, nodeExecutionStatus]);
+  }, [workflowData, setNodes, setEdges, updateNodeExecutionStatus, nodeExecutionStatus, showCustomInputOverlayHandler]);
 
-  const convertToReactFlowNodes = (nodeData, workflowId, onStatusUpdate, executionStatus) => {
+  const convertToReactFlowNodes = (nodeData, workflowId, onStatusUpdate, executionStatus, onShowCustomInput) => {
     return nodeData.map((node) => {
       // 実行状態の決定：ローカル状態 > command.status > デフォルト
       const finalStatus = executionStatus[node.id] || node.status || 'pending';
@@ -247,6 +339,7 @@ const ReteEditor = ({ workflowData }) => {
           color: getNodeColor(node.type), // 色をdataに含める
           workflowId: workflowId, // ワークフローIDを追加
           onStatusUpdate: onStatusUpdate, // 状態更新関数
+          onShowCustomInput: onShowCustomInput, // カスタム入力オーバーレイ表示関数
           executionStatus: finalStatus, // 最終的な実行状態
           originalStatus: node.status, // 元のcommand.status
         },
@@ -386,6 +479,42 @@ const ReteEditor = ({ workflowData }) => {
           )}
         </div>
       </div>
+
+      {/* カスタム入力オーバーレイ */}
+      {showCustomInputOverlay && (
+        <div className="workflow-custom-input-overlay">
+          <div className="workflow-custom-input-modal">
+            <div className="workflow-custom-input-header">
+              <h3>カスタム入力</h3>
+            </div>
+            <div className="workflow-custom-input-content">
+              <textarea
+                value={customInputText}
+                onChange={(e) => setCustomInputText(e.target.value)}
+                placeholder="実行時に使用するカスタム入力を入力してください..."
+                className="workflow-custom-input-textarea"
+                rows={6}
+                autoFocus
+              />
+            </div>
+            <div className="workflow-custom-input-buttons">
+              <button
+                onClick={hideCustomInputOverlay}
+                className="workflow-custom-input-button workflow-custom-input-button--cancel"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={executeWithCustomInput}
+                className="workflow-custom-input-button workflow-custom-input-button--execute"
+                disabled={!customInputText.trim()}
+              >
+                実行
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,0 +1,32 @@
+{
+    "id": "claude-create-db-detail",
+    "name": "DB詳細設計書を作成",
+    "type": "claude",
+    "description": "DB詳細設計書を作成します。",
+    "command": [
+        {
+            "id": "start",
+            "name": "開始",
+            "command": [
+                "-"
+            ],
+            "next": "create-db-detail"
+        },
+        {
+            "id": "create-db-detail",
+            "name": "DB詳細設計書を作成",
+            "description": "DB詳細設計書の作成を行う",
+            "input": [{"file": "docs/note/*", "required": "yes"}],
+            "type": "claude",
+            "command": ["CREATE-db-detail"],
+            "next": "finish"
+        },
+        {
+            "id": "finish",
+            "name": "終了",
+            "command": [
+                "-"
+            ]
+        }
+    ]
+}

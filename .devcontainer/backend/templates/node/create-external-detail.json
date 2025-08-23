@@ -1,0 +1,32 @@
+{
+    "id": "claude-create-external-detail",
+    "name": "外部連携詳細設計書を作成",
+    "type": "claude",
+    "description": "外部連携設計書を作成します。",
+    "command": [
+        {
+            "id": "start",
+            "name": "開始",
+            "command": [
+                "-"
+            ],
+            "next": "create-external-detail"
+        },
+        {
+            "id": "create-external-detail",
+            "name": "外部連携詳細設計書を作成",
+            "description": "外部連携詳細設計書の作成を行う",
+            "input": [{"file": "docs/note/*", "required": "yes"}],
+            "type": "claude",
+            "command": ["CREATE-external-detail"],
+            "next": "finish"
+        },
+        {
+            "id": "finish",
+            "name": "終了",
+            "command": [
+                "-"
+            ]
+        }
+    ]
+}
