@@ -1,62 +1,76 @@
-# データベース詳細設計書
+# ToDoアプリケーション DB詳細設計書
 
 ## DB実行環境
-- DBMS: MySQL  
+- DBMS: MySQL
 - Version: 8.0
-- 実行環境: AWS RDS MySQL
-    - シングルAZ構成（個人開発・コスト重視のため）
-    - 自動バックアップ有効、保持期間7日間
-    - インスタンスクラス: db.t3.micro（無料利用枠）
-    - ストレージ: 20GB（gp2）
 
-## テーブル仕様書
+## 接続方法
 
-### users（ユーザ管理テーブル）
-ユーザアカウント情報の管理を行うテーブルです。
+### 開発環境
+- **DB構築環境**: ローカル(Docker)
+- **ホスト**: `localhost`(ハードコーディング)
+- **ユーザ名**: `todoapp`(ハードコーディング)
+- **パスワード**: `tododev123`(ハードコーディング)
+- **DB名**: `todoapp_dev`(ハードコーディング)
+- **ポート**: `3306`(ハードコーディング)
+
+### 商用環境
+- **DB構築環境**: AWS RDS MySQL
+- **ホスト**:
+    - AWS Systems Manager Parameter Store
+    - キー名: `todo-db-host`
+- **ユーザ名**:
+    - AWS Secrets Manager
+    - **arn**: `arn:aws:secretsmanager:ap-northeast-1:000000000000:secret:todo-db-credentials-XXXXXX`
+- **パスワード**:
+    - AWS Secrets Manager
+    - **arn**: `arn:aws:secretsmanager:ap-northeast-1:000000000000:secret:todo-db-credentials-XXXXXX`
+- **DB名**:
+    - AWS Systems Manager Parameter Store
+    - キー名: `todo-db-name`
+- **ポート**:
+    - AWS Systems Manager Parameter Store
+    - キー名: `todo-db-port`
+
+## テーブル仕様
+
+### todos（ToDoアイテム管理テーブル）
+ToDoアイテムの管理を行うメインテーブルです。
+
 | No | カラム名 | データ型 | PK | FK | UNIQUE | NOT NULL | 概要 | 備考 |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| 1. | user_id | INT | ○ |  |  | ○ | ユーザID | AUTO_INCREMENT |
-| 2. | username | VARCHAR(50) |  |  | ○ | ○ | ユーザ名 | ログイン時に使用 |
-| 3. | password_hash | VARCHAR(255) |  |  |  | ○ | パスワードハッシュ | bcryptで暗号化して格納 |
-| 4. | created_at | DATETIME |  |  |  | ○ | 作成日時 | DEFAULT CURRENT_TIMESTAMP |
-| 5. | updated_at | DATETIME |  |  |  | ○ | 更新日時 | ON UPDATE CURRENT_TIMESTAMP |
+| 1. | id | BIGINT | ○ | - | ○ | ○ | ToDoアイテムID | AUTO_INCREMENT、プライマリキー |
+| 2. | title | VARCHAR(200) | - | - | - | ○ | タイトル | ToDoの見出し（必須） |
+| 3. | description | TEXT | - | - | - | - | 詳細説明 | ToDoの詳細内容（任意、最大1000文字程度想定） |
+| 4. | completed | BOOLEAN | - | - | - | ○ | 完了状態 | FALSE=未完了, TRUE=完了 |
+| 5. | created_at | TIMESTAMP | - | - | - | ○ | 作成日時 | DEFAULT CURRENT_TIMESTAMP |
+| 6. | updated_at | TIMESTAMP | - | - | - | ○ | 更新日時 | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP |
 
-### parent_tasks（親タスク管理テーブル）
-親タスクの情報を管理するテーブルです。
-| No | カラム名 | データ型 | PK | FK | UNIQUE | NOT NULL | 概要 | 備考 |
-| -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| 1. | parent_task_id | INT | ○ |  |  | ○ | 親タスクID | AUTO_INCREMENT |
-| 2. | user_id | INT |  | ○ |  | ○ | ユーザID | FOREIGN KEY (users.user_id) |
-| 3. | title | VARCHAR(255) |  |  |  | ○ | タスクタイトル |  |
-| 4. | description | TEXT |  |  |  |  | タスク詳細 |  |
-| 5. | status | ENUM('pending', 'completed') |  |  |  | ○ | ステータス | DEFAULT 'pending' |
-| 6. | created_at | DATETIME |  |  |  | ○ | 作成日時 | DEFAULT CURRENT_TIMESTAMP |
-| 7. | updated_at | DATETIME |  |  |  | ○ | 更新日時 | ON UPDATE CURRENT_TIMESTAMP |
+### インデックス設計
 
-### child_tasks（子タスク管理テーブル）
-子タスクの情報を管理するテーブルです。
-| No | カラム名 | データ型 | PK | FK | UNIQUE | NOT NULL | 概要 | 備考 |
-| -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| 1. | child_task_id | INT | ○ |  |  | ○ | 子タスクID | AUTO_INCREMENT |
-| 2. | parent_task_id | INT |  | ○ |  | ○ | 親タスクID | FOREIGN KEY (parent_tasks.parent_task_id) |
-| 3. | title | VARCHAR(255) |  |  |  | ○ | タスクタイトル |  |
-| 4. | description | TEXT |  |  |  |  | タスク詳細 |  |
-| 5. | status | ENUM('pending', 'completed') |  |  |  | ○ | ステータス | DEFAULT 'pending' |
-| 6. | created_at | DATETIME |  |  |  | ○ | 作成日時 | DEFAULT CURRENT_TIMESTAMP |
-| 7. | updated_at | DATETIME |  |  |  | ○ | 更新日時 | ON UPDATE CURRENT_TIMESTAMP |
+#### todos テーブル
+- **主キー**: `PRIMARY KEY (id)`
+- **複合インデックス**: `INDEX idx_completed_created (completed, created_at DESC)` 
+  - 完了状態による絞り込みと作成日時での並び替えの最適化
+- **単項インデックス**: `INDEX idx_created_at (created_at DESC)`
+  - 作成日時での並び替えの最適化
 
-## テーブル関係
-- users (1) ← (N) parent_tasks: 1ユーザは複数の親タスクを持つ
-- parent_tasks (1) ← (N) child_tasks: 1親タスクは複数の子タスクを持つ
+### 制約・ルール
 
-## インデックス設計
-- users.username: UNIQUE制約によりインデックス自動生成
-- parent_tasks.user_id: 外部キー制約によりインデックス自動生成
-- child_tasks.parent_task_id: 外部キー制約によりインデックス自動生成
+#### todos テーブル制約
+- `title` は空文字列不可（アプリケーション側でバリデーション）
+- `completed` のデフォルト値は `FALSE`
+- `created_at`, `updated_at` は自動設定
 
-## データ整合性制約
-- CASCADE削除設定:
-  - usersテーブル削除時 → 関連するparent_tasksも削除
-  - parent_tasksテーブル削除時 → 関連するchild_tasksも削除
-- 文字コード: utf8mb4
-- 照合順序: utf8mb4_unicode_ci
+#### データ型選択理由
+- **id**: BIGINT - 将来的な大量データを想定
+- **title**: VARCHAR(200) - 要件定義の最大文字数制限
+- **description**: TEXT - 長文対応、NULLable
+- **completed**: BOOLEAN - 2値状態の明確な表現
+- **TIMESTAMP**: タイムゾーン考慮、自動更新機能活用
+
+### データ保持期間・運用ルール
+- **データ保持**: 無制限（個人利用のため削除ポリシーなし）
+- **論理削除**: 実装しない（物理削除のみ）
+- **バックアップ**: RDS自動バックアップ（7日間保持）
+- **マイグレーション**: SQLAlchemy Alembicを使用
