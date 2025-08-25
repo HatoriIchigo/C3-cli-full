@@ -33,16 +33,25 @@
 
 ## 接続先別
 ### ID照会
-
 #### 基本情報
 - **概要**: 契約IDを取得
+- **URLパス**: `weather`
 - **メソッド**: GET
-- **入力**:
+- **クエリパラメータ**:
+    - `id (string)`: ID
+- **メッセージボディ**:
     - `username (string)`: ユーザ名
     - `password (string)`: パスワード、ハッシュ
 - **出力**:
     - `id (string)`: 契約ID
     - `message (string)`: メッセージ
+
+#### リクエストURL例
+【サンプル】
+\```
+https://api.weather.co.jp/weather
+https://api.weather.co.jp/weather?id=sample
+\```
 
 #### リクエスト形式
 \`\`\`json
