@@ -1,10 +1,13 @@
 noteを元にインフラ要件を決定
 
+## 以下を最後に表示してください
+- 全ての処理が正常に成功した場合: `result: success`
+- 何らかのエラーで失敗した場合： `result: failed: <失敗原因>`
+
 ## インプット
-- docs/note/配下（メモ）を読み込み
-    - 無ければエラー終了
-- docs/reqs/requirement.md（要件定義書）　を読み込み
-    - 無ければエラー終了
+- docs/note/note.md（メモ、必須）を読み込み
+- docs/note/infra-req.md（インフラ要件定義書、任意）
+- docs/reqs/requirement.md（要件定義書、必須）　を読み込み
 
 ## 概要
 メモ書きと要件定義書を元にインフラ要件（概要）を作成する。

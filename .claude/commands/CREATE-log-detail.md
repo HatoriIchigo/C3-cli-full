@@ -1,8 +1,13 @@
 ログ詳細設計の作成
 
+## 以下を最後に表示してください
+- 全ての処理が正常に成功した場合: `result: success`
+- 何らかのエラーで失敗した場合： `result: failed: <失敗原因>`
+
 ## インプット
-- docs/note/配下（メモ、必須）を読み込み
+- docs/note/note.md（メモ、必須）を読み込み
 - docs/base/base-doc.md（基本設計書、必須）を読み込み
+- docs/note/log.md（メモ、任意）を読み込み
 
 ## 概要
 インプットを元にログの詳細設計を出力。
@@ -153,6 +158,6 @@ jsonサンプルとフィールドの説明を記載。
 
 
 ## アウトプット
-docs/detail/log/log.mdに保存
+docs/detail/log.mdに保存
 
 

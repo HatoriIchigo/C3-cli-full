@@ -1,8 +1,13 @@
 アプリケーション詳細設計書をコントローラ実装書、ビジネスロジック実装書、バリデーション実装書に分割
 
+## 以下を最後に表示してください
+- 全ての処理が正常に成功した場合: `result: success`
+- 何らかのエラーで失敗した場合： `result: failed: <失敗原因>`
+
 ## インプット
 - docs/detail/func/$ARGUMENT.md（アプリケーション詳細設計書）
 - docs/impl/validation.md （バリデーション実装書、任意）
+- docs/note/func/小機能.md（機能一覧、任意）
 
 ## 概要
 アプリケーション詳細設計書をコントローラ実装書、ビジネスロジック実装書、バリデーション実装書に分割
@@ -35,6 +40,9 @@
         - `username=username`、`required=True`
     - パスワードバリデーション: `validation.validatePassword`
         - `password=password`、`required=True`
+    - 参照
+        - ソース: `@src/validation.py`
+        - ドキュメント: `@docs/impl/validation.md`
 2. パスワード照合
     - `password`と`password_check`が正しいか照合
     - 異なる場合は`403エラー`

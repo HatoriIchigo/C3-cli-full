@@ -1,14 +1,17 @@
 各使用書からDBの使用を抽出・提案
 
+## 以下を最後に表示してください
+- 全ての処理が正常に成功した場合: `result: success`
+- 何らかのエラーで失敗した場合： `result: failed: <失敗原因>`
+
 ## インプット
-- docs/note/配下（メモ、必須）を読み込み
+- docs/note/note.md（メモ、必須）　を読み込み
 - docs/base/base-doc.md（基本設計書、必須）を読み込み
+- docs/note/external.md（DB詳細設計書メモ、任意）
 
 ## 概要
-メモ及び基本設計書からDB仕様書を作成する
-- メモ及び基本設計書にDBに関する記述がある場合にDB仕様書を作成してください
-    - メモに詳細な記述がある場合はそちらを優先、無い場合は提案をしてください
-- メモ及び基本設計書にDBに関する記述がない場合、DBが必要かどうか判断してください
+メモ及び基本設計書からDB仕様書を作成する。
+DB詳細設計が必要ない場合はそのまま正常終了とする。
 
 ## DB仕様フォーマット
 ### DB実行環境
@@ -27,6 +30,7 @@ DBの実行環境を出力してください。
 - **ユーザ名**: `testuser`(ハードコーディング)
 - **パスワード**: `Passw0rd`(ハードコーディング)
 - **DB名**: `testdb`(ハードコーディング)
+- **管理方法**: 設定ファイル(`application.env`)
 
 ### 商用環境
 - **DB構築環境**: AWS Aurora on MySQL
@@ -35,8 +39,10 @@ DBの実行環境を出力してください。
     - キー名: `prd-db-host`
 - **ユーザ名**:
     - AWS SecretsManager
+    - **arn**: `arn:aws:secretsmanager:ap-northeast-1:111111111111:secret:test01-eyNhMR`
 - **パスワード**:
     - AWS SecretsManager
+    - **arn**: `arn:aws:secretsmanager:ap-northeast-1:111111111111:secret:test01-eyNhMR`
 - **DB名**:
     - AWS SystemManager ParameterStore
     - キー名: `prd-db-dbname`
@@ -72,5 +78,5 @@ DBの実行環境を出力してください。
 ```
 
 ## 出力
-出力結果を docs/detail/db/db.md に保存してください。
+出力結果を docs/detail/db.md に保存してください。
 

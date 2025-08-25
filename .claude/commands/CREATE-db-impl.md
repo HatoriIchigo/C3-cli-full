@@ -1,5 +1,9 @@
 DB詳細設計書からDB実装書を生成する
 
+## 以下を最後に表示してください
+- 全ての処理が正常に成功した場合: `result: success`
+- 何らかのエラーで失敗した場合： `result: failed: <失敗原因>`
+
 ## インプット
 - docs/base/base-doc.md（基本設計書、必須）を読み込み
 - docs/detail/db/db.md（DB設計書、必須）を読み込み
