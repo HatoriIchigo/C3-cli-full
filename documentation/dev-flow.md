@@ -20,9 +20,6 @@
 6. CREATE-doc-base
     - 基本設計書を作成
     - docs/base/base-doc.mdが生成される
-7. CREATE-dir-base
-    - ディレクトリ構成（概要）を生成
-    - docs/base/dir-struct.mdが生成される
 
 #### 詳細設計
 ★以降、機能単位で生成するものがあります。
@@ -37,14 +34,18 @@
 10. CREATE-infra-detail（任意）
     - インフラ詳細設計書を作成
     - docs/detail/infra.mdが生成される
+12. CREATE-log-detail
 11. CREATE-network-detail（任意）
     - ネットワーク詳細設計書を作成
     - docs/detail/network.mdが生成される
 12. CREATE-app-detail 機能名/機能ID
     - 各機能個別の詳細設計書を作成する
     - docs/detail/func/機能名.機能ID.md　及び　docs/detail/message.mdが生成される
-13. CREATE-impl-order
-    - 実装順番を生成する
+
+#### 実装計画書作成
+CREATE-external-impl
+CREATE-db-impl
+CREATE-app-impl
 
 #### 実装
 13. IMPL-local-devenv（任意）
