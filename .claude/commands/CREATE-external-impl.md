@@ -47,12 +47,12 @@ BODYを送信する場合のリクエストで送る際のスキーマを定義�
 レスポンスで受信する際のスキーマを定義。
 
 接続先（URLごと）に別々にファイル出力。
-例えば、天気APIの天気取得を利用するなら、docs/impl/schema/external/schema/天気_地震情報取得_レスポンス.mdのように保存。
+例えば、天気APIの天気取得を利用するなら、docs/impl/external/schema/天気_地震情報取得_レスポンス.mdのように保存。
 
 【サンプル】
 ```markdown
 ## 天気API 地震情報取得リクエストスキーマ
-- **コード**: `@src/schema/external/WeatherEarthQuakeResponse.py`
+- **コード**: `@src/external/WeatherEarthQuakeResponse.py`
 【サンプル】
 \`\`\`json
 {
@@ -67,10 +67,13 @@ BODYを送信する場合のリクエストで送る際のスキーマを定義�
 | message | string | Mito |
 ```
 
+また、エラーレスポンスが上記のレスポンススキーマと違う場合は別途定義。
+保存先はdocs/impl/external/schema/天気_地震情報取得_エラーレスポンス.mdのように保存。
+
 ## 外部連携実装書
 接続先等を記載。
 接続先（URLごと）に別々にファイル出力。
-例えば、天気APIの天気取得を利用するなら、docs/impl/schema/external/天気_地震情報取得.mdのように保存。
+例えば、天気APIの天気取得を利用するなら、docs/impl/external/天気_地震情報取得.mdのように保存。
 
 リクエスト、レスポンス、バリデーションはソースやドキュメントに飛ばす。
 なお、バリデーションドキュメントが存在しない場合は作成してもしくは追記。
@@ -87,10 +90,13 @@ BODYを送信する場合のリクエストで送る際のスキーマを定義�
     - `callback` (string, 任意): JSONP用コールバック関数名
 - **リクエスト**:
     - **ソース**: `@src/schema/external/WeatherEarthQuakeRequest.py`
-    - **ドキュメント**: `docs/impl/schema/external/schema/天気_地震情報取得_リクエスト.md`
+    - **ドキュメント**: `docs/impl/schema/external/天気_地震情報取得_リクエスト.md`
 - **レスポンス**:
     - **ソース**: `@src/schema/external/WeatherEarthQuakeResponse.py`
-    - **ドキュメント**: `docs/impl/schema/external/schema/天気_地震情報取得_レスポンス.md`
+    - **ドキュメント**: `docs/impl/schema/external/天気_地震情報取得_レスポンス.md`
+- **エラーレスポンス**:
+    - **ソース**: `@src/schema/external/WeatherEarthQuakeErrorResponse.py`
+    - **ドキュメント**: `docs/impl/schema/external/天気_地震情報取得_エラーレスポンス.md`
 
 ## 実装時のメソッド
 - **メソッド名**: `searchZipCode`

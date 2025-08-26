@@ -3,23 +3,6 @@
 ## 共通仕様
 - バリデーションエラー時は`ValidationException`を発生させる
 
-## 郵便番号関連のバリデーション
-### validateZipCode
-- **概要**: 郵便番号のバリデーション
-- **引数**:
-    - zipcode: string
-    - required: bool （trueの場合引数は必須）
-- **戻り値**
-    - bool: （trueの場合は値が設定されている）
-- **バリデーション条件**:
-    - 7桁の数字、またはハイフン付き8桁（XXX-XXXX形式）
-    - 空文字、null、undefined は不可（required=true時）
-- **処理フロー**
-    1. `required == false`かつ`zipcode == ""` なら false で返却
-    2. `zipcode`のバリデーション処理
-        - バリデーション失敗時は`ValidationException`
-    3. true を返却
-
 ## ToDo関連のバリデーション
 ### validateBooleanOptional
 - **概要**: boolean型の任意パラメータのバリデーション
@@ -64,4 +47,20 @@
 - **処理フロー**
     1. `required == false`かつ`offset == None` なら false で返却
     2. `offset`が0未満の場合は`ValidationException`
+    3. true を返却
+
+## 汎用バリデーション
+### validateDict
+- **概要**: 辞書型データのバリデーション
+- **引数**:
+    - data: dict/None
+    - required: bool （trueの場合引数は必須）
+- **戻り値**
+    - bool: （trueの場合は値が設定されている）
+- **バリデーション条件**:
+    - None または dict型であること
+    - 文字列、数値、リストは不可
+- **処理フロー**
+    1. `required == false`かつ`data == None` なら false で返却
+    2. `data`がdict型でない場合は`ValidationException`
     3. true を返却
