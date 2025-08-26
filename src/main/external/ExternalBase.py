@@ -8,9 +8,9 @@ from typing import Generic, TypeVar, Type, Dict, Any, Optional
 import requests
 import time
 
-from ..schema.external.ExternalRequestBase import ExternalRequestBase
-from ..schema.external.ExternalResponseBase import ExternalResponseBase
-from ..schema.external.ExternalErrorBase import ExternalErrorBase
+from main.schema.external.ExternalRequestBase import ExternalRequestBase
+from main.schema.external.ExternalResponseBase import ExternalResponseBase
+from main.schema.external.ExternalErrorBase import ExternalErrorBase
 
 # 型変数の定義
 Req = TypeVar("Req", bound=ExternalRequestBase)
@@ -68,11 +68,11 @@ class ExternalBase(ABC, Generic[Req, Res, Err]):
 
         for attempt in range(self.numRetry):
             try:
-                # Pydanticモデルの場合はdict()メソッドでJSONに変換
+                # Pydanticモデルの場合はmodel_dump()メソッドでJSONに変換
                 json_data = None
                 if self.data is not None:
-                    if hasattr(self.data, 'dict'):  # Pydanticモデルの場合
-                        json_data = self.data.dict()
+                    if hasattr(self.data, 'model_dump'):  # Pydanticモデルの場合
+                        json_data = self.data.model_dump()
                     else:  # 通常の辞書の場合
                         json_data = self.data
                 
@@ -86,12 +86,12 @@ class ExternalBase(ABC, Generic[Req, Res, Err]):
 
                 if response.status_code >= 400:
                     try:
-                        err = self.err_model.parse_obj(response.json())
+                        err = self.err_model.model_validate(response.json())
                     except Exception:
                         raise RuntimeError(f"Unexpected error response: {response.text}")
                     raise RuntimeError(f"API Error {getattr(err, 'code', '')}: {getattr(err, 'message', '')}")
 
-                return self.res_model.parse_obj(response.json())
+                return self.res_model.model_validate(response.json())
 
             except requests.RequestException as e:
                 last_exception = e
